@@ -1,4 +1,4 @@
-use rust_hit_and_blow::*;
+use rust_hit_and_blow::numbers::Numbers;
 use rust_hit_and_blow::validation;
 use std::str::FromStr;
 

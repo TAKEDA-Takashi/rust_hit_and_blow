@@ -1,4 +1,5 @@
 use rust_hit_and_blow::*;
+use rust_hit_and_blow::validation;
 use std::str::FromStr;
 
 fn main() {
@@ -17,17 +18,17 @@ fn main() {
 
         let s = input.trim();
 
-        if !is_match_length(&s, GAME_DIGIT) {
+        if !validation::is_match_length(&s, GAME_DIGIT) {
             println!("{}桁で入力してください。", GAME_DIGIT);
             continue;
         }
 
-        if !is_num_string(&s) {
+        if !validation::is_num_string(&s) {
             println!("数字以外が入力されています。");
             continue;
         }
 
-        if is_duplicate(&s) {
+        if validation::is_duplicate(&s) {
             println!("重複した数字が入力されています。");
             continue;
         }

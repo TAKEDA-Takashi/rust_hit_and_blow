@@ -88,7 +88,7 @@ mod tests {
     }
 
     #[test]
-    fn test_numbers_new() {
+    fn test_new() {
         let n = Numbers::new(4);
         assert_eq!(4, n.value.len());
 
@@ -101,14 +101,14 @@ mod tests {
     }
 
     #[test]
-    fn test_numbers_from_str() {
+    fn test_from_str() {
         assert!(Numbers::from_str("0123").is_ok());
         assert!(Numbers::from_str("012a").is_err());
         assert!(Numbers::from_str("0120").is_err());
     }
 
     #[test]
-    fn test_numbers_count_hit() {
+    fn test_count_hit() {
         let model = from_vec(vec![0, 1, 2, 3]);
         let reply = from_vec(vec![0, 1, 2, 3]);
         assert_eq!(4, model.count_hit(&reply).unwrap());
@@ -127,7 +127,7 @@ mod tests {
     }
 
     #[test]
-    fn test_numbers_count_blow() {
+    fn test_count_blow() {
         let model = from_vec(vec![0, 1, 2, 3]);
         let reply = from_vec(vec![0, 1, 2, 3]);
         assert_eq!(0, model.count_blow(&reply).unwrap());

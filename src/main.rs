@@ -7,9 +7,13 @@ fn main() {
 
     let mut game_clear = false;
 
+    println!("{}桁の数字を当てよう！。", GAME_DIGIT);
+
     while !game_clear {
         let mut input = String::new();
-        std::io::stdin().read_line(&mut input).ok();
+        std::io::stdin()
+            .read_line(&mut input)
+            .expect("Failed to read line");
 
         let s = input.trim();
 

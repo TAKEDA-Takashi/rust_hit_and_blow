@@ -55,10 +55,6 @@ impl Numbers {
 
         Some(blow)
     }
-
-    fn from_vec(v: &Vec<u8>) -> Numbers {
-        Numbers { value: v.clone() }
-    }
 }
 
 impl FromStr for Numbers {
@@ -78,7 +74,7 @@ impl FromStr for Numbers {
             v.push(c.to_digit(10).unwrap() as u8);
         }
 
-        Ok(Self::from_vec(&v))
+        Ok(Numbers { value: v })
     }
 }
 
@@ -109,6 +105,10 @@ pub fn is_duplicate(s: &str) -> bool {
 mod tests {
     use super::*;
 
+    fn from_vec(v: Vec<u8>) -> Numbers {
+        Numbers { value: v }
+    }
+
     #[test]
     fn test_numbers_new() {
         let n = Numbers::new(4);
@@ -131,39 +131,39 @@ mod tests {
 
     #[test]
     fn test_numbers_count_hit() {
-        let model = Numbers::from_vec(&vec![0, 1, 2, 3]);
-        let reply = Numbers::from_vec(&vec![0, 1, 2, 3]);
+        let model = from_vec(vec![0, 1, 2, 3]);
+        let reply = from_vec(vec![0, 1, 2, 3]);
         assert_eq!(4, model.count_hit(&reply).unwrap());
 
-        let model = Numbers::from_vec(&vec![0, 1, 2, 3]);
-        let reply = Numbers::from_vec(&vec![0, 1, 2, 4]);
+        let model = from_vec(vec![0, 1, 2, 3]);
+        let reply = from_vec(vec![0, 1, 2, 4]);
         assert_eq!(3, model.count_hit(&reply).unwrap());
 
-        let model = Numbers::from_vec(&vec![1, 2, 3, 0]);
-        let reply = Numbers::from_vec(&vec![0, 1, 2, 3]);
+        let model = from_vec(vec![1, 2, 3, 0]);
+        let reply = from_vec(vec![0, 1, 2, 3]);
         assert_eq!(0, model.count_hit(&reply).unwrap());
 
-        let model = Numbers::from_vec(&vec![0, 1, 2, 3]);
-        let reply = Numbers::from_vec(&vec![0, 1, 2, 3, 4]);
+        let model = from_vec(vec![0, 1, 2, 3]);
+        let reply = from_vec(vec![0, 1, 2, 3, 4]);
         assert!(model.count_hit(&reply).is_none());
     }
 
     #[test]
     fn test_numbers_count_blow() {
-        let model = Numbers::from_vec(&vec![0, 1, 2, 3]);
-        let reply = Numbers::from_vec(&vec![0, 1, 2, 3]);
+        let model = from_vec(vec![0, 1, 2, 3]);
+        let reply = from_vec(vec![0, 1, 2, 3]);
         assert_eq!(0, model.count_blow(&reply).unwrap());
 
-        let model = Numbers::from_vec(&vec![0, 1, 2, 3]);
-        let reply = Numbers::from_vec(&vec![0, 1, 2, 4]);
+        let model = from_vec(vec![0, 1, 2, 3]);
+        let reply = from_vec(vec![0, 1, 2, 4]);
         assert_eq!(0, model.count_blow(&reply).unwrap());
 
-        let model = Numbers::from_vec(&vec![1, 2, 3, 0]);
-        let reply = Numbers::from_vec(&vec![0, 1, 2, 3]);
+        let model = from_vec(vec![1, 2, 3, 0]);
+        let reply = from_vec(vec![0, 1, 2, 3]);
         assert_eq!(4, model.count_blow(&reply).unwrap());
 
-        let model = Numbers::from_vec(&vec![0, 1, 2, 3]);
-        let reply = Numbers::from_vec(&vec![0, 1, 2, 3, 4]);
+        let model = from_vec(vec![0, 1, 2, 3]);
+        let reply = from_vec(vec![0, 1, 2, 3, 4]);
         assert!(model.count_blow(&reply).is_none());
     }
 

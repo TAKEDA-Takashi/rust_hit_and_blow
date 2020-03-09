@@ -2,6 +2,49 @@ use rand::seq::SliceRandom;
 use regex::Regex;
 use std::vec::Vec;
 
+pub struct Numbers {
+    value: Vec<u8>,
+}
+
+impl Numbers {
+    pub fn new(v: &Vec<u8>) -> Numbers {
+        Numbers { value: v.clone() }
+    }
+
+    pub fn count_hit(&self, reply: &Numbers) -> usize {
+        if self.value.len() != reply.value.len() {
+            panic!("length not match");
+        }
+        self.value
+            .iter()
+            .zip(reply.value.iter())
+            .filter(|(a, b)| a == b)
+            .count()
+    }
+
+    pub fn count_blow(&self, reply: &Numbers) -> usize {
+        if self.value.len() != reply.value.len() {
+            panic!("length not match");
+        }
+
+        let mut blow = 0;
+
+        for i in 0..(self.value.len()) {
+            for j in 0..(reply.value.len()) {
+                if i == j {
+                    continue;
+                }
+
+                if self.value[i] == reply.value[j] {
+                    blow += 1;
+                }
+            }
+        }
+
+        blow
+    }
+}
+
 pub fn get_random_numbers(digit: usize) -> Vec<u8> {
     if digit < 1 || digit > 9 {
         panic!("digit is in the range 1 <= digit <= 9");
@@ -49,42 +92,44 @@ pub fn is_duplicate(s: &str) -> bool {
     false
 }
 
-pub fn count_hit(model: &Vec<u8>, reply: &Vec<u8>) -> usize {
-    if model.len() != reply.len() {
-        panic!("length not match");
-    }
-    model
-        .iter()
-        .zip(reply.iter())
-        .filter(|(a, b)| a == b)
-        .count()
-}
-
-pub fn count_blow(model: &Vec<u8>, reply: &Vec<u8>) -> usize {
-    if model.len() != reply.len() {
-        panic!("length not match");
-    }
-
-    let mut blow = 0;
-
-    for i in 0..(model.len()) {
-        for j in 0..(reply.len()) {
-            if i == j {
-                continue;
-            }
-
-            if model[i] == reply[j] {
-                blow += 1;
-            }
-        }
-    }
-
-    blow
-}
-
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn test_numbers_new() {
+        let n = Numbers::new(&vec![0, 1, 2, 3]);
+    }
+
+    #[test]
+    fn test_numbers_count_hit() {
+        let model = Numbers::new(&vec![0, 1, 2, 3]);
+        let reply = Numbers::new(&vec![0, 1, 2, 3]);
+        assert_eq!(4, model.count_hit(&reply));
+
+        let model = Numbers::new(&vec![0, 1, 2, 3]);
+        let reply = Numbers::new(&vec![0, 1, 2, 4]);
+        assert_eq!(3, model.count_hit(&reply));
+
+        let model = Numbers::new(&vec![1, 2, 3, 0]);
+        let reply = Numbers::new(&vec![0, 1, 2, 3]);
+        assert_eq!(0, model.count_hit(&reply));
+    }
+
+    #[test]
+    fn test_numbers_count_blow() {
+        let model = Numbers::new(&vec![0, 1, 2, 3]);
+        let reply = Numbers::new(&vec![0, 1, 2, 3]);
+        assert_eq!(0, model.count_blow(&reply));
+
+        let model = Numbers::new(&vec![0, 1, 2, 3]);
+        let reply = Numbers::new(&vec![0, 1, 2, 4]);
+        assert_eq!(0, model.count_blow(&reply));
+
+        let model = Numbers::new(&vec![1, 2, 3, 0]);
+        let reply = Numbers::new(&vec![0, 1, 2, 3]);
+        assert_eq!(4, model.count_blow(&reply));
+    }
 
     #[test]
     fn test_get_random_numbers() {
@@ -132,35 +177,5 @@ mod tests {
 
         let s = "1231";
         assert!(is_duplicate(s));
-    }
-
-    #[test]
-    fn test_count_hit() {
-        let v1 = vec![0, 1, 2, 3];
-        let v2 = vec![0, 1, 2, 3];
-        assert_eq!(4, count_hit(&v1, &v2));
-
-        let v1 = vec![0, 1, 2, 3];
-        let v2 = vec![0, 1, 2, 4];
-        assert_eq!(3, count_hit(&v1, &v2));
-
-        let v1 = vec![1, 2, 3, 0];
-        let v2 = vec![0, 1, 2, 3];
-        assert_eq!(0, count_hit(&v1, &v2));
-    }
-
-    #[test]
-    fn test_count_blow() {
-        let v1 = vec![0, 1, 2, 3];
-        let v2 = vec![0, 1, 2, 3];
-        assert_eq!(0, count_blow(&v1, &v2));
-
-        let v1 = vec![0, 1, 2, 3];
-        let v2 = vec![0, 1, 2, 4];
-        assert_eq!(0, count_blow(&v1, &v2));
-
-        let v1 = vec![1, 2, 3, 0];
-        let v2 = vec![0, 1, 2, 3];
-        assert_eq!(4, count_blow(&v1, &v2));
     }
 }

@@ -2,7 +2,7 @@ use rust_hit_and_blow::*;
 
 fn main() {
     const GAME_DIGIT: usize = 4;
-    let model = get_random_numbers(GAME_DIGIT);
+    let model = Numbers::new(&get_random_numbers(GAME_DIGIT));
 
     let mut game_clear = false;
 
@@ -27,9 +27,9 @@ fn main() {
             continue;
         }
 
-        let reply = string_to_u8vec(&s);
-        let hit = count_hit(&model, &reply);
-        let blow = count_blow(&model, &reply);
+        let reply = Numbers::new(&string_to_u8vec(&s));
+        let hit = model.count_hit(&reply);
+        let blow = model.count_blow(&reply);
 
         println!("HIT: {}, BLOW: {}", hit, blow);
 

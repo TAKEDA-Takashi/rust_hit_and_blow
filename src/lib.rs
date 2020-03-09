@@ -1,5 +1,6 @@
 use rand::seq::SliceRandom;
 use regex::Regex;
+use std::str::FromStr;
 use std::vec::Vec;
 
 pub struct Numbers {
@@ -7,8 +8,17 @@ pub struct Numbers {
 }
 
 impl Numbers {
-    pub fn new(v: &Vec<u8>) -> Numbers {
-        Numbers { value: v.clone() }
+    pub fn new(digit: usize) -> Numbers {
+        if digit < 1 || digit > 9 {
+            panic!("digit is in the range 1 <= digit <= 9");
+        }
+
+        let mut v = (0..=9).collect::<Vec<u8>>();
+        let mut rng = rand::thread_rng();
+        v.shuffle(&mut rng);
+        Numbers {
+            value: v[0..digit].to_vec(),
+        }
     }
 
     pub fn count_hit(&self, reply: &Numbers) -> usize {
@@ -43,30 +53,31 @@ impl Numbers {
 
         blow
     }
+
+    fn from_vec(v: &Vec<u8>) -> Numbers {
+        Numbers { value: v.clone() }
+    }
 }
 
-pub fn get_random_numbers(digit: usize) -> Vec<u8> {
-    if digit < 1 || digit > 9 {
-        panic!("digit is in the range 1 <= digit <= 9");
+impl FromStr for Numbers {
+    type Err = String;
+
+    fn from_str(s: &str) -> Result<Self, Self::Err> {
+        if !is_num_string(s) {
+            return Err("contains not number character".to_string());
+        }
+
+        if is_duplicate(s) {
+            return Err("duplicate numbers".to_string());
+        }
+
+        let mut v = vec![];
+        for c in s.chars() {
+            v.push(c.to_digit(10).unwrap() as u8);
+        }
+
+        Ok(Self::from_vec(&v))
     }
-
-    let mut v = (0..=9).collect::<Vec<u8>>();
-    let mut rng = rand::thread_rng();
-    v.shuffle(&mut rng);
-    v[0..digit].to_vec()
-}
-
-pub fn string_to_u8vec(s: &str) -> Vec<u8> {
-    if !is_num_string(s) {
-        panic!("contains not number character");
-    }
-
-    let mut v = vec![];
-    for c in s.chars() {
-        v.push(c.to_digit(10).unwrap() as u8);
-    }
-
-    v
 }
 
 pub fn is_match_length(s: &str, length: usize) -> bool {
@@ -98,57 +109,52 @@ mod tests {
 
     #[test]
     fn test_numbers_new() {
-        let n = Numbers::new(&vec![0, 1, 2, 3]);
-    }
-
-    #[test]
-    fn test_numbers_count_hit() {
-        let model = Numbers::new(&vec![0, 1, 2, 3]);
-        let reply = Numbers::new(&vec![0, 1, 2, 3]);
-        assert_eq!(4, model.count_hit(&reply));
-
-        let model = Numbers::new(&vec![0, 1, 2, 3]);
-        let reply = Numbers::new(&vec![0, 1, 2, 4]);
-        assert_eq!(3, model.count_hit(&reply));
-
-        let model = Numbers::new(&vec![1, 2, 3, 0]);
-        let reply = Numbers::new(&vec![0, 1, 2, 3]);
-        assert_eq!(0, model.count_hit(&reply));
-    }
-
-    #[test]
-    fn test_numbers_count_blow() {
-        let model = Numbers::new(&vec![0, 1, 2, 3]);
-        let reply = Numbers::new(&vec![0, 1, 2, 3]);
-        assert_eq!(0, model.count_blow(&reply));
-
-        let model = Numbers::new(&vec![0, 1, 2, 3]);
-        let reply = Numbers::new(&vec![0, 1, 2, 4]);
-        assert_eq!(0, model.count_blow(&reply));
-
-        let model = Numbers::new(&vec![1, 2, 3, 0]);
-        let reply = Numbers::new(&vec![0, 1, 2, 3]);
-        assert_eq!(4, model.count_blow(&reply));
-    }
-
-    #[test]
-    fn test_get_random_numbers() {
-        let n = get_random_numbers(4);
-        assert_eq!(4, n.len());
+        let n = Numbers::new(4);
+        assert_eq!(4, n.value.len());
 
         // not duplicate
-        for i in 0..(n.len()) {
-            for j in (i + 1)..(n.len()) {
-                assert!(n[i] != n[j]);
+        for i in 0..(n.value.len()) {
+            for j in (i + 1)..(n.value.len()) {
+                assert!(n.value[i] != n.value[j]);
             }
         }
     }
 
     #[test]
-    fn test_string_to_u8vec() {
-        let s = "0123";
-        let v = string_to_u8vec(s);
-        assert_eq!(vec![0, 1, 2, 3], v);
+    fn test_numbers_from_str() {
+        assert!(Numbers::from_str("0123").is_ok());
+        assert!(Numbers::from_str("012a").is_err());
+        assert!(Numbers::from_str("0120").is_err());
+    }
+
+    #[test]
+    fn test_numbers_count_hit() {
+        let model = Numbers::from_vec(&vec![0, 1, 2, 3]);
+        let reply = Numbers::from_vec(&vec![0, 1, 2, 3]);
+        assert_eq!(4, model.count_hit(&reply));
+
+        let model = Numbers::from_vec(&vec![0, 1, 2, 3]);
+        let reply = Numbers::from_vec(&vec![0, 1, 2, 4]);
+        assert_eq!(3, model.count_hit(&reply));
+
+        let model = Numbers::from_vec(&vec![1, 2, 3, 0]);
+        let reply = Numbers::from_vec(&vec![0, 1, 2, 3]);
+        assert_eq!(0, model.count_hit(&reply));
+    }
+
+    #[test]
+    fn test_numbers_count_blow() {
+        let model = Numbers::from_vec(&vec![0, 1, 2, 3]);
+        let reply = Numbers::from_vec(&vec![0, 1, 2, 3]);
+        assert_eq!(0, model.count_blow(&reply));
+
+        let model = Numbers::from_vec(&vec![0, 1, 2, 3]);
+        let reply = Numbers::from_vec(&vec![0, 1, 2, 4]);
+        assert_eq!(0, model.count_blow(&reply));
+
+        let model = Numbers::from_vec(&vec![1, 2, 3, 0]);
+        let reply = Numbers::from_vec(&vec![0, 1, 2, 3]);
+        assert_eq!(4, model.count_blow(&reply));
     }
 
     #[test]

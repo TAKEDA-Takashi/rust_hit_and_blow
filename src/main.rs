@@ -1,3 +1,4 @@
+use rust_hit_and_blow::input_read_line;
 use rust_hit_and_blow::numbers::Numbers;
 use rust_hit_and_blow::validation;
 use std::str::FromStr;
@@ -11,12 +12,7 @@ fn main() {
     println!("{}桁の数字を当てよう！。", GAME_DIGIT);
 
     while !game_clear {
-        let mut input = String::new();
-        std::io::stdin()
-            .read_line(&mut input)
-            .expect("Failed to read line");
-
-        let s = input.trim();
+        let s = input_read_line().expect("Failed to read line");
 
         if !validation::is_match_length(&s, GAME_DIGIT) {
             println!("{}桁で入力してください。", GAME_DIGIT);

@@ -59,15 +59,15 @@ impl Numbers {
 }
 
 impl FromStr for Numbers {
-    type Err = String;
+    type Err = ParseNumbersError;
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         if !validation::is_num_string(s) {
-            return Err("contains not number character".to_string());
+            return Err(ParseNumbersError::ContainsNotNumber);
         }
 
         if validation::is_duplicate(s) {
-            return Err("duplicate numbers".to_string());
+            return Err(ParseNumbersError::DupulicateNumber);
         }
 
         let mut v = vec![];
@@ -77,6 +77,12 @@ impl FromStr for Numbers {
 
         Ok(Numbers { value: v })
     }
+}
+
+#[derive(Debug)]
+pub enum ParseNumbersError {
+    ContainsNotNumber,
+    DupulicateNumber,
 }
 
 #[cfg(test)]

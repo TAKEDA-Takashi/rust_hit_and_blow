@@ -21,20 +21,22 @@ impl Numbers {
         }
     }
 
-    pub fn count_hit(&self, reply: &Numbers) -> usize {
+    pub fn count_hit(&self, reply: &Numbers) -> Option<usize> {
         if self.value.len() != reply.value.len() {
-            panic!("length not match");
+            return None;
         }
-        self.value
-            .iter()
-            .zip(reply.value.iter())
-            .filter(|(a, b)| a == b)
-            .count()
+        Some(
+            self.value
+                .iter()
+                .zip(reply.value.iter())
+                .filter(|(a, b)| a == b)
+                .count(),
+        )
     }
 
-    pub fn count_blow(&self, reply: &Numbers) -> usize {
+    pub fn count_blow(&self, reply: &Numbers) -> Option<usize> {
         if self.value.len() != reply.value.len() {
-            panic!("length not match");
+            return None;
         }
 
         let mut blow = 0;
@@ -51,7 +53,7 @@ impl Numbers {
             }
         }
 
-        blow
+        Some(blow)
     }
 
     fn from_vec(v: &Vec<u8>) -> Numbers {
@@ -131,30 +133,38 @@ mod tests {
     fn test_numbers_count_hit() {
         let model = Numbers::from_vec(&vec![0, 1, 2, 3]);
         let reply = Numbers::from_vec(&vec![0, 1, 2, 3]);
-        assert_eq!(4, model.count_hit(&reply));
+        assert_eq!(4, model.count_hit(&reply).unwrap());
 
         let model = Numbers::from_vec(&vec![0, 1, 2, 3]);
         let reply = Numbers::from_vec(&vec![0, 1, 2, 4]);
-        assert_eq!(3, model.count_hit(&reply));
+        assert_eq!(3, model.count_hit(&reply).unwrap());
 
         let model = Numbers::from_vec(&vec![1, 2, 3, 0]);
         let reply = Numbers::from_vec(&vec![0, 1, 2, 3]);
-        assert_eq!(0, model.count_hit(&reply));
+        assert_eq!(0, model.count_hit(&reply).unwrap());
+
+        let model = Numbers::from_vec(&vec![0, 1, 2, 3]);
+        let reply = Numbers::from_vec(&vec![0, 1, 2, 3, 4]);
+        assert!(model.count_hit(&reply).is_none());
     }
 
     #[test]
     fn test_numbers_count_blow() {
         let model = Numbers::from_vec(&vec![0, 1, 2, 3]);
         let reply = Numbers::from_vec(&vec![0, 1, 2, 3]);
-        assert_eq!(0, model.count_blow(&reply));
+        assert_eq!(0, model.count_blow(&reply).unwrap());
 
         let model = Numbers::from_vec(&vec![0, 1, 2, 3]);
         let reply = Numbers::from_vec(&vec![0, 1, 2, 4]);
-        assert_eq!(0, model.count_blow(&reply));
+        assert_eq!(0, model.count_blow(&reply).unwrap());
 
         let model = Numbers::from_vec(&vec![1, 2, 3, 0]);
         let reply = Numbers::from_vec(&vec![0, 1, 2, 3]);
-        assert_eq!(4, model.count_blow(&reply));
+        assert_eq!(4, model.count_blow(&reply).unwrap());
+
+        let model = Numbers::from_vec(&vec![0, 1, 2, 3]);
+        let reply = Numbers::from_vec(&vec![0, 1, 2, 3, 4]);
+        assert!(model.count_blow(&reply).is_none());
     }
 
     #[test]

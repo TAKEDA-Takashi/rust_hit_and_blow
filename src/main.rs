@@ -29,8 +29,8 @@ fn main() {
         }
 
         if let Ok(reply) = Numbers::from_str(&s) {
-            let hit = model.count_hit(&reply);
-            let blow = model.count_blow(&reply);
+            let hit = model.count_hit(&reply).unwrap();
+            let blow = model.count_blow(&reply).unwrap();
 
             println!("HIT: {}, BLOW: {}", hit, blow);
 

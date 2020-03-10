@@ -1,5 +1,38 @@
 use regex::Regex;
 
+#[derive(Debug, PartialEq, Eq)]
+pub enum ValidationError {
+    MatchLength,
+    NumString,
+    NotDuplicate,
+}
+
+pub struct Validator {
+    digit: usize,
+}
+
+impl Validator {
+    pub fn new(digit: usize) -> Validator {
+        Validator { digit }
+    }
+
+    pub fn validate(&self, s: &str) -> Result<(), ValidationError> {
+        if !is_match_length(s, self.digit) {
+            return Err(ValidationError::MatchLength);
+        }
+
+        if !is_num_string(s) {
+            return Err(ValidationError::NumString);
+        }
+
+        if is_duplicate(s) {
+            return Err(ValidationError::NotDuplicate);
+        }
+
+        Ok(())
+    }
+}
+
 pub fn is_match_length(s: &str, length: usize) -> bool {
     s.len() == length
 }
@@ -53,5 +86,30 @@ mod test {
 
         let s = "1231";
         assert!(is_duplicate(s));
+    }
+
+    #[test]
+    fn test_validator_validate() {
+        let v = Validator::new(4);
+        let e = v.validate("0123");
+        assert!(e.is_ok());
+
+        let e = v.validate("01234");
+        match e {
+            Ok(_) => panic!("assert error"),
+            Err(kind) => assert_eq!(ValidationError::MatchLength, kind),
+        }
+
+        let e = v.validate("012a");
+        match e {
+            Ok(_) => panic!("assert error"),
+            Err(kind) => assert_eq!(ValidationError::NumString, kind),
+        }
+
+        let e = v.validate("0121");
+        match e {
+            Ok(_) => panic!("assert error"),
+            Err(kind) => assert_eq!(ValidationError::NotDuplicate, kind),
+        }
     }
 }

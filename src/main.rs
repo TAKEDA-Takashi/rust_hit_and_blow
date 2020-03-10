@@ -1,10 +1,12 @@
 use rust_hit_and_blow::input_read_line;
 use rust_hit_and_blow::numbers::Numbers;
-use rust_hit_and_blow::validation;
+use rust_hit_and_blow::validation::ValidationError;
+use rust_hit_and_blow::validation::Validator;
 use std::str::FromStr;
 
 fn main() {
     const GAME_DIGIT: usize = 4;
+    let validator = Validator::new(GAME_DIGIT);
     let model = Numbers::new(GAME_DIGIT);
 
     let mut game_clear = false;
@@ -14,18 +16,12 @@ fn main() {
     while !game_clear {
         let s = input_read_line().expect("Failed to read line");
 
-        if !validation::is_match_length(&s, GAME_DIGIT) {
-            println!("{}桁で入力してください。", GAME_DIGIT);
-            continue;
-        }
-
-        if !validation::is_num_string(&s) {
-            println!("数字以外が入力されています。");
-            continue;
-        }
-
-        if validation::is_duplicate(&s) {
-            println!("重複した数字が入力されています。");
+        if let Err(e) = validator.validate(&s) {
+            match e {
+                ValidationError::MatchLength => println!("{}桁で入力してください。", GAME_DIGIT),
+                ValidationError::NumString => println!("数字以外が入力されています。"),
+                ValidationError::NotDuplicate => println!("重複した数字が入力されています。"),
+            }
             continue;
         }
 

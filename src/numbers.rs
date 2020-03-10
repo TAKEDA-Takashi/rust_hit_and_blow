@@ -79,7 +79,7 @@ impl FromStr for Numbers {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Eq)]
 pub enum ParseNumbersError {
     ContainsNotNumber,
     DupulicateNumber,

@@ -70,12 +70,9 @@ impl FromStr for Numbers {
             return Err(ParseNumbersError::DupulicateNumber);
         }
 
-        let mut v = vec![];
-        for c in s.chars() {
-            v.push(c.to_digit(10).unwrap() as u8);
-        }
-
-        Ok(Numbers { value: v })
+        Ok(Numbers {
+            value: s.chars().map(|c| c.to_digit(10).unwrap() as u8).collect(),
+        })
     }
 }
 

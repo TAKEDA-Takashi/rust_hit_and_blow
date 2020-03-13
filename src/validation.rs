@@ -86,22 +86,13 @@ mod test {
         let e = v.validate("0123");
         assert!(e.is_ok());
 
-        let e = v.validate("01234");
-        match e {
-            Ok(_) => panic!("assert error"),
-            Err(kind) => assert_eq!(ValidationError::MatchLength, kind),
-        }
+        let e = v.validate("01234").err().unwrap();
+        assert_eq!(ValidationError::MatchLength, e);
 
-        let e = v.validate("012a");
-        match e {
-            Ok(_) => panic!("assert error"),
-            Err(kind) => assert_eq!(ValidationError::NumString, kind),
-        }
+        let e = v.validate("012a").err().unwrap();
+        assert_eq!(ValidationError::NumString, e);
 
-        let e = v.validate("0121");
-        match e {
-            Ok(_) => panic!("assert error"),
-            Err(kind) => assert_eq!(ValidationError::NotDuplicate, kind),
-        }
+        let e = v.validate("0121").err().unwrap();
+        assert_eq!(ValidationError::NotDuplicate, e);
     }
 }

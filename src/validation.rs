@@ -1,4 +1,5 @@
 use regex::Regex;
+use std::collections::HashSet;
 
 #[derive(Debug, PartialEq, Eq)]
 pub enum ValidationError {
@@ -43,17 +44,7 @@ pub fn is_num_string(s: &str) -> bool {
 }
 
 pub fn is_duplicate(s: &str) -> bool {
-    let v: Vec<char> = s.chars().collect();
-
-    for i in 0..(v.len()) {
-        for j in (i + 1)..(v.len()) {
-            if v[i] == v[j] {
-                return true;
-            }
-        }
-    }
-
-    false
+    s.len() != s.chars().collect::<HashSet<char>>().len()
 }
 
 #[cfg(test)]

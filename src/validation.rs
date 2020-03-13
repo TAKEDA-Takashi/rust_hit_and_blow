@@ -34,7 +34,7 @@ impl Validator {
 }
 
 pub fn is_match_length(s: &str, length: usize) -> bool {
-    s.len() == length
+    s.len() == length && s.chars().count() == length
 }
 
 pub fn is_num_string(s: &str) -> bool {
@@ -65,6 +65,7 @@ mod test {
         assert!(is_match_length("0123", 4));
         assert!(is_match_length("012345", 6));
         assert!(is_match_length("", 0));
+        assert!(!is_match_length("１2", 4));
     }
 
     #[test]

@@ -83,16 +83,13 @@ mod test {
     #[test]
     fn test_validator_validate() {
         let v = Validator::new(4);
-        let e = v.validate("0123");
-        assert!(e.is_ok());
 
-        let e = v.validate("01234").err().unwrap();
-        assert_eq!(ValidationError::MatchLength, e);
+        assert!(v.validate("0123").is_ok());
 
-        let e = v.validate("012a").err().unwrap();
-        assert_eq!(ValidationError::NumString, e);
+        assert_eq!(Err(ValidationError::MatchLength), v.validate("01234"));
 
-        let e = v.validate("0121").err().unwrap();
-        assert_eq!(ValidationError::NotDuplicate, e);
+        assert_eq!(Err(ValidationError::NumString), v.validate("012a"));
+
+        assert_eq!(Err(ValidationError::NotDuplicate), v.validate("0121"));
     }
 }
